@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Optjen</title>
+<style>
+:root{--bg:#F5EFE3;--card:#FFFAF0;--fg:#3B2A20;--mut:#8C7B6B;--line:#E4DAC8;--acc:#3B2A20;--onacc:#F5EFE3;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2A1D16;--card:#3B2A20;--fg:#F5EFE3;--mut:#B3A18C;--line:#4D392C;--acc:#F5EFE3;--onacc:#2A1D16;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#2A1D16;--card:#3B2A20;--fg:#F5EFE3;--mut:#B3A18C;--line:#4D392C;--acc:#F5EFE3;--onacc:#2A1D16;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:520px;margin:0 auto;padding:20px 20px 110px}
+h1{font-size:34px;letter-spacing:-.02em;margin:12px 0 4px;font-weight:700}
+.sub{color:var(--mut);font-size:15px;margin:0 0 20px}
+.card{background:var(--card);border-radius:22px;padding:20px;margin-bottom:14px;border:1px solid var(--line)}
+.ring{position:relative;width:220px;height:220px;margin:6px auto 14px}
+.ring svg{transform:rotate(-90deg)}
+.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.big{font-size:54px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.lbl{color:var(--mut);font-size:15px}
+.btn{width:100%;border:0;border-radius:16px;padding:16px;font-size:17px;font-weight:600;background:var(--acc);color:var(--onacc);font-family:inherit;transition:transform .15s,opacity .15s;cursor:pointer}
+.btn:active{transform:scale(.97);opacity:.85}
+.btn.sec{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn:disabled{opacity:.35}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ex h3{margin:0 0 12px;font-size:18px;font-weight:600}
+.rate{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;color:var(--mut);font-size:15px}
+.rate input{width:68px;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:600 16px inherit;text-align:center}
+.hist{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);font-size:16px}
+.hist:last-child{border:0}
+.hist small{display:block;color:var(--mut);font-size:13px}
+.pos{font-weight:600}.neg{color:var(--mut);font-weight:600}
+.empty{text-align:center;color:var(--mut);padding:30px 0}
+nav{position:fixed;left:0;right:0;bottom:0;padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);display:flex;justify-content:center;gap:6px}
+nav button{flex:1;max-width:160px;border:0;background:none;color:var(--mut);font:600 11px -apple-system,sans-serif;padding:6px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav button.on{color:var(--fg)}
+nav svg{width:26px;height:26px}
+.view{display:none}.view.on{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast{position:fixed;z-index:30;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-90px);background:var(--acc);color:var(--onacc);padding:12px 20px;border-radius:30px;font-weight:600;font-size:15px;transition:transform .4s cubic-bezier(.2,1.2,.4,1);text-align:center;max-width:90vw}
+.toast.show{transform:translate(-50%,0)}
+#ov{position:fixed;inset:0;z-index:20;background:#2A1D16;color:#F5EFE3;display:none;flex-direction:column;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
+#ov.on{display:flex}
+#ov video{width:100%;flex:1;min-height:0;object-fit:cover;border-radius:24px;transform:scaleX(-1);background:#3B2A20}
+#ov .st{text-align:center;padding:14px 0 6px;font-size:16px;color:#B3A18C;min-height:44px}
+#ov .cnt{text-align:center;font-size:72px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+#ov .earn{text-align:center;color:#B3A18C;margin:6px 0 14px}
+#ov .btn{background:#F5EFE3;color:#2A1D16}
+#ov .sens{display:flex;align-items:center;gap:10px;font-size:13px;color:#B3A18C;margin-bottom:12px;justify-content:center}
+#ov input[type=range]{accent-color:#F5EFE3;width:160px}
+#ov.nocam video{display:none}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div id="ov"><video id="vid" playsinline muted></video><div class="st" id="st"></div><div class="cnt" id="cnt">0</div><div class="earn" id="earn"></div><div class="sens" id="sens">Følsomhed <input type="range" id="sr" min="4" max="20" value="8"></div><button class="btn" id="done">Færdig</button></div>
+<main>
+<section class="view on" id="v-home">
+  <h1>Skærmtid</h1>
+  <p class="sub">Tjen den ved at bevæge dig.</p>
+  <div class="card">
+    <div class="ring">
+      <svg width="220" height="220" viewBox="0 0 220 220"><circle cx="110" cy="110" r="96" fill="none" stroke="var(--line)" stroke-width="16"/><circle id="arc" cx="110" cy="110" r="96" fill="none" stroke="var(--acc)" stroke-width="16" stroke-linecap="round" stroke-dasharray="603.2" stroke-dashoffset="603.2" style="transition:stroke-dashoffset .6s cubic-bezier(.3,.9,.3,1)"/></svg>
+      <div class="c"><div class="big" id="bal">0:00</div><div class="lbl" id="balLbl">til rådighed</div></div>
+    </div>
+    <button class="btn" id="go">Start skærmtid</button>
+  </div>
+  <div class="card row"><div><div class="lbl">Optjent i dag</div><div style="font-size:24px;font-weight:700" id="eToday">0 min</div></div><div style="text-align:right"><div class="lbl">Brugt i dag</div><div style="font-size:24px;font-weight:700" id="sToday">0 min</div></div></div>
+</section>
+<section class="view" id="v-train">
+  <h1>Træn</h1>
+  <p class="sub">Bestem selv satserne. Kameraet tæller med.</p>
+  <div id="list"></div>
+</section>
+<section class="view" id="v-hist">
+  <h1>Historik</h1>
+  <p class="sub">Alt hvad du har optjent og brugt.</p>
+  <div class="card" id="hist"></div>
+  <button class="btn sec" id="reset">Nulstil historik</button>
+</section>
+</main>
+<nav>
+  <button data-t="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Skærmtid</button>
+  <button data-t="train"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>Træn</button>
+  <button data-t="hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Historik</button>
+</nav>
+<script>
+const EX=[
+ {id:"pu",name:"Armbøjninger",unit:"gentagelser",n:5,m:1},
+ {id:"sq",name:"Squats",unit:"gentagelser",n:10,m:1},
+ {id:"jj",name:"Jumping jacks",unit:"gentagelser",n:20,m:1},
+ {id:"pl",name:"Planke",unit:"sekunder",n:30,m:1},
+ {id:"st",name:"Løb og gå (skridt)",unit:"skridt",n:100,m:1}
+];
+let log=[],run=null,cfg={},S=null;
+const $=s=>document.querySelector(s);
+function load(){try{log=JSON.parse(localStorage.getItem("optjen")||"[]");cfg=JSON.parse(localStorage.getItem("optjenCfg")||"{}")}catch(e){log=[];cfg={}}}
+function save(){try{localStorage.setItem("optjen",JSON.stringify(log));localStorage.setItem("optjenCfg",JSON.stringify(cfg))}catch(e){}}
+const rate=e=>{const c=cfg[e.id]||e;return(c.m||0)/(c.n||1)};
+const bal=()=>log.reduce((a,l)=>a+l.min,0)-(run?run.el/60:0);
+const day=t=>new Date(t).toDateString();
+function fmt(m){m=Math.max(0,m);const s=Math.round(m*60);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function toast(t,ms=2400){const e=$("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),ms)}
+function render(){
+ const b=bal();$("#bal").textContent=fmt(b);
+ $("#balLbl").textContent=run?"kører nu":"til rådighed";
+ $("#arc").style.strokeDashoffset=603.2*(1-Math.min(Math.max(b,0)/60,1));
+ $("#go").textContent=run?"Stop skærmtid":"Start skærmtid";
+ $("#go").className="btn"+(run?" sec":"");$("#go").disabled=!run&&b<=0.02;
+ const td=log.filter(l=>day(l.t)===day(Date.now()));
+ $("#eToday").textContent=Math.round(td.filter(l=>l.min>0).reduce((a,l)=>a+l.min,0))+" min";
+ $("#sToday").textContent=Math.round(-td.filter(l=>l.min<0).reduce((a,l)=>a+l.min,0)+(run?run.el/60:0))+" min";
+ $("#hist").innerHTML=log.length?[...log].reverse().slice(0,50).map(l=>`<div class="hist"><div>${l.label}<small>${new Date(l.t).toLocaleString("da-DK",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</small></div><div class="${l.min>0?"pos":"neg"}">${l.min>0?"+":"−"}${fmt(Math.abs(l.min))}</div></div>`).join(""):'<div class="empty">Ingen aktivitet endnu.<br>Gå til Træn for at komme i gang.</div>';
+}
+function renderList(){
+ $("#list").innerHTML=EX.map(e=>{const c=cfg[e.id]||e;return `<div class="card ex"><h3>${e.name}</h3><div class="rate"><input type="number" inputmode="decimal" min="1" data-id="${e.id}" data-k="n" value="${c.n}"><span>${e.unit} =</span><input type="number" inputmode="decimal" min="0" step="0.5" data-id="${e.id}" data-k="m" value="${c.m}"><span>min</span></div><button class="btn" data-start="${e.id}">${e.id==="st"?"Start skridttæller":"Start med kamera"}</button></div>`}).join("");
+}
+document.addEventListener("change",ev=>{
+ const i=ev.target.closest("[data-k]");if(!i)return;
+ const e=EX.find(x=>x.id===i.dataset.id);cfg[e.id]=cfg[e.id]||{n:e.n,m:e.m};
+ let v=parseFloat(i.value);if(!(v>=0))v=cfg[e.id][i.dataset.k];if(i.dataset.k==="n"&&v<1)v=1;
+ cfg[e.id][i.dataset.k]=v;i.value=v;save();toast("Gemt",1000);
+});
+document.addEventListener("click",ev=>{
+ const t=ev.target.closest("[data-t]");
+ if(t){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t.dataset.t).classList.add("on");document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b===t));scrollTo(0,0);return}
+ const s=ev.target.closest("[data-start]");if(s)startSession(s.dataset.start);
+});
+/* ---------- Træningssession ---------- */
+const W=64,H=48,cv=document.createElement("canvas");cv.width=W;cv.height=H;
+const cx=cv.getContext("2d",{willReadFrequently:true});
+function gray(){cx.drawImage($("#vid"),0,0,W,H);const d=cx.getImageData(0,0,W,H).data,g=new Float32Array(W*H);for(let i=0;i<W*H;i++)g[i]=.3*d[i*4]+.59*d[i*4+1]+.11*d[i*4+2];return g}
+function upd(){
+ const e=S.ex,n=Math.floor(S.count);
+ $("#cnt").textContent=n;
+ $("#earn").textContent=`${e.unit} · +${fmt(S.count*rate(e))} skærmtid`;
+}
+async function startSession(id){
+ const e=EX.find(x=>x.id===id);
+ S={ex:e,count:0,dir:0,ext:null,sm:null,bg:null,t:0,ready:false};
+ $("#ov").classList.add("on");$("#ov").classList.toggle("nocam",id==="st");
+ $("#sens").style.display=(id==="st"||id==="pl")?"none":"flex";
+ upd();
+ if(id==="st")return steps();
+ try{S.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:640,height:480},audio:false});}
+ catch(err){$("#st").textContent="Kameraet kunne ikke åbnes. Tillad kamera i browseren, og åbn siden direkte i Safari eller Chrome.";return}
+ const v=$("#vid");v.srcObject=S.stream;await v.play();
+ let c=5;$("#st").textContent=`Gå ud af billedet. Starter om ${c}`;
+ S.cd=setInterval(()=>{c--;if(c>0){$("#st").textContent=`Gå ud af billedet. Starter om ${c}`;return}
+  clearInterval(S.cd);S.bg=gray();S.ready=true;$("#st").textContent="Gå ind i billedet og træn!";
+  S.iv=setInterval(frame,66)},1000);
+}
+function track(y,amp){
+ if(S.ext==null)S.ext=y;
+ if(S.dir===0){if(y>S.ext+amp){S.dir=1;S.ext=y}else if(y<S.ext-amp){S.dir=-1;S.ext=y}return}
+ if(S.dir===1){if(y>S.ext)S.ext=y;else if(S.ext-y>amp){S.count++;S.dir=-1;S.ext=y;upd()}}
+ else{if(y<S.ext)S.ext=y;else if(y-S.ext>amp){S.dir=1;S.ext=y}}
+}
+function frame(){
+ const f=gray(),bg=S.bg,rows=new Uint16Array(H);let fg=0;
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;if(Math.abs(f[i]-bg[i])>30){rows[y]++;fg++}else bg[i]+=(f[i]-bg[i])*.02}
+ const present=fg>W*H*.04;
+ if(!present){$("#st").textContent="Jeg kan ikke se dig. Træd ind i billedet.";return}
+ $("#st").textContent="Jeg ser dig. Fortsæt!";
+ if(S.ex.id==="pl"){S.count+=.066;upd();return}
+ let top=0;while(top<H&&rows[top]<3)top++;
+ const y=top/H;S.sm=S.sm==null?y:S.sm*.6+y*.4;
+ track(S.sm,$("#sr").value/100);
+}
+function steps(){
+ const go=async()=>{
+  if(typeof DeviceMotionEvent==="undefined"){$("#st").textContent="Din enhed har ingen bevægelsessensor.";return}
+  if(typeof DeviceMotionEvent.requestPermission==="function"){
+   try{if(await DeviceMotionEvent.requestPermission()!=="granted"){$("#st").textContent="Adgang til bevægelse blev afvist.";return}}
+   catch(e){$("#st").textContent="Kunne ikke få adgang til bevægelse. Åbn siden direkte i Safari.";return}
+  }
+  let got=false,g=9.8,s=0,above=false,last=0;
+  S.h=e=>{const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;got=true;
+   const m=Math.hypot(a.x,a.y,a.z);g=g*.92+m*.08;s=s*.5+(m-g)*.5;
+   const now=Date.now();
+   if(s>1.3&&!above&&now-last>280){S.count++;last=now;upd()}
+   above=s>1.3};
+  addEventListener("devicemotion",S.h);
+  $("#st").textContent="Læg telefonen i lommen og gå eller løb.";
+  S.chk=setTimeout(()=>{if(!got)$("#st").textContent="Ingen sensordata. Åbn siden direkte på din telefon."},3500);
+ };
+ $("#st").textContent="Starter…";go();
+}
+function stop(){
+ if(!S)return;
+ clearInterval(S.cd);clearInterval(S.iv);clearTimeout(S.chk);
+ if(S.h)removeEventListener("devicemotion",S.h);
+ if(S.stream)S.stream.getTracks().forEach(t=>t.stop());
+ $("#vid").srcObject=null;
+ const e=S.ex,n=Math.floor(S.count),m=n*rate(e);
+ if(n>0){log.push({t:Date.now(),label:`${e.name} · ${n} ${e.unit}`,min:m});save();toast(`+${fmt(m)} skærmtid`)}
+ S=null;$("#ov").classList.remove("on");render();
+}
+$("#done").onclick=stop;
+$("#go").onclick=()=>{
+ if(run){clearInterval(run.id);if(run.el>1)log.push({t:Date.now(),label:"Skærmtid brugt",min:-run.el/60});run=null;save();render();return}
+ run={el:0,id:setInterval(()=>{run.el++;if(bal()<=0){const el=run.el;clearInterval(run.id);log.push({t:Date.now(),label:"Skærmtid brugt",min:-el/60});run=null;save();toast("Tiden er brugt. Tid til at træne!")}render()},1000)};render();
+};
+$("#reset").onclick=()=>{if(confirm("Nulstil al historik og skærmtid? Dine satser beholdes.")){if(run){clearInterval(run.id);run=null}log=[];save();render()}};
+load();renderList();render();
+</script>
+</body>
+</html>
